@@ -1,37 +1,113 @@
-import pandas as pd
-import numpy as np 
-import csv
+import numpy as np
+from pathlib import Path
+from random import *
+import math
+
 
 class Reader():
 
-	def change_file_format(self):
-		org_ratings = pd.read_csv('data_train.csv')
-		org_ratings.head()
+    def __init__(self):
+        self.highest_col_index = 1000
+        self.highest_row_index = 10000
+        self.X_train = np.zeros(([self.highest_row_index, self.highest_col_index]))
+        self.X_train_as_list = []
+        self.X_validate_as_list = []
+        self.X_validate = np.zeros(([self.highest_row_index, self.highest_col_index]))
+        self.num_rows = 1176953
+        self.file_name = "X_train.txt"
+        self.train_file = Path(self.file_name)
 
-		users_movies = org_ratings.Id
-		users = np.zeros(users_movies.shape)
-		user_count = 0
-		movies = np.zeros(users_movies.shape)
-		movie_count = 0
+    def convert_to_surprise_representation(self, path):
+        X_train_as_list = ""
+        rows_per_percent = self.num_rows / 100
+        with open(path) as csvfile:
+            i = 0
+            percentage = 10            
+            for line in csvfile:
+                if (i == 0):
+                    i += 1
+                    continue
+                i += 1
+                tup = line.split(',')
+                (row, col) = self.parse_index(tup[0])
+                X_train_as_list += str(row) + " ; " + str(col) + " ; " + tup[1][:-1] + " ; \n"
+                
+                if (i >= percentage * rows_per_percent):
+                    print(percentage, " % done")
+                    percentage += 10
+            csvfile.close()
 
-		ratings = org_ratings.Prediction
+        with open("surprise_format", "w") as newfile:
+            newfile.write(X_train_as_list)
+        newfile.close()
+                
 
-		for item in users_movies:
-			tup = item.split('c')
-			user = int(tup[0][1:-1])
-			users[user_count] = user
-			user_count = user_count+1
-			movie = int(tup[1])
-			movies[movie_count] = movie
-			movie_count = movie_count+1
+    def read_dataset(self, path, validation_percentage):
+        self.X_train = np.zeros(([self.highest_row_index, self.highest_col_index]))
+        self.X_validate = np.zeros(([self.highest_row_index, self.highest_col_index]))
+        rows_per_percent = self.num_rows / 100
 
-		with open('separated_ratings.csv', "w") as newfile:
-		    writer = csv.writer(newfile)
-		    writer.writerow(["userId", "movieId", "rating"])
-		    for i in range(users_movies.shape[0]):
-		    	writer.writerow([users[i],movies[i], ratings[i]])
-		    	if i % 100000 == 0:
-		    		print("finished writing ", i, "of ", users_movies.shape[0], " lines")
+        """if self.train_file.exists():
+            self.X = np.fromfile(self.file_name)
+            return"""
 
+        with open(path) as csvfile:
+            i = 0
+            percentage = 10
+            num_eval = 0.
+            num_train = 0.
+            for line in csvfile:
+                if (i == 0):
+                    i += 1
+                    continue
+                i += 1
+                tup = line.split(',')
+                (row, col) = self.parse_index(tup[0])
+                """if (row > self.highest_row_index):
+                    print("resize performed: row")
+                    self.highest_row_index = row
+                    X.resize([self.highest_row_index, self.highest_col_index])
+                if (col > self.highest_col_index):
+                    print("resize performed: col")
+                    self.highest_col_index = col
+                    X.resize([self.highest_row_index, self.highest_col_index])"""
+                if (random() < validation_percentage):
+                    self.X_validate[row, col] = int(tup[1])
+                    num_eval += 1
+                else:
+                    self.X_train[row, col] = int(tup[1])
+                    num_train += 1
 
-		print("finished writing")
+                if (i >= percentage * rows_per_percent):
+                    print(percentage, " % done")
+                    percentage += 10
+
+            csvfile.close()
+        print("Set counts: Validation: ", num_eval, ", Train: ", num_train)
+        print("Real Validation percentage: ", num_eval/self.num_rows)
+        # self.X.tofile(self.file_name)
+
+    def parse_index(self, index):
+        index = index[1:]
+        ind = index.split('c')
+        row = int(ind[0][:-1]) - 1
+        col = int(ind[1]) - 1
+        if (math.isnan(row) or math.isnan(col)):
+        	print(index)
+        	print(row)
+        	print(col)
+        	raise ValueError("What the fuck is going on")
+        return (row, col)
+
+    """def read_to_be_predicted(self, path):
+        self.indices_to_predict = {}
+        with open(path) as csvfile:
+            firstline = True
+            for line in csvfile:
+                if (firstline):
+                    firstline = False
+                    continue
+                tup = line.split(',')
+                self.indices_to_predict.update({tup[0] : self.parse_index(tup[0])})
+            csvfile.close()"""
+
