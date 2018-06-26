@@ -3,7 +3,7 @@ import numpy as np
 import csv
 import os.path
 
-from reader import Reader
+from reader_nn import Reader
 reader = Reader()
 
 from neural_net import NeuralNet
