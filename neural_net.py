@@ -105,13 +105,13 @@ class NeuralNet():
 		plt.ylabel('MSE loss')
 		plt.show()
 
-	def bidirectional_LSTM(self, train, valid, users, movies):
+	def bidirectional_LSTM(self, train, valid, users, movies, to_predict):
 		# Bidirectional LSTM model with regularization
 		embedding_output = 100
 		dropout = 0.75
-		nodes = 50
+		nodes = 80
 		batch_size = 50
-		epochs = 10
+		epochs = 3
 
 		#Bias layer
 		user_input = Input(shape=(1,), dtype='int64', name='user_input')
@@ -119,8 +119,6 @@ class NeuralNet():
 		user_embed = Embedding(len(users), embedding_output, input_length =1)(user_input)
 		movie_embed = Embedding(len(movies), embedding_output, input_length =1)(movie_input)
 		x = concatenate([user_embed, movie_embed], axis=-1)
-
-		
 
 		print("Dropout: ", dropout, ", Nodes: ", nodes, ", Batch_size: ", batch_size, ", Epochs: ", epochs)
 
@@ -142,14 +140,18 @@ class NeuralNet():
 			nb_epoch=epochs, 
    			validation_data=([valid.userId, valid.movieId], valid.rating))
 
-		plt.clf()
-		plt.figure(figsize = (10,7))
-		plt.plot(LSTM_bi_history.history['loss'], label = 'BiLSTMloss')
-		plt.plot(LSTM_bi_history.history['val_loss'], label = 'BiLSTMval_loss')
-		plt.legend()
-		plt.xlabel('Epochs')
-		plt.ylabel('MSE loss')
-		plt.show()
+		#plt.clf()
+		#plt.figure(figsize = (10,7))
+		#plt.plot(LSTM_bi_history.history['loss'], label = 'BiLSTMloss')
+		#plt.plot(LSTM_bi_history.history['val_loss'], label = 'BiLSTMval_loss')
+		#plt.legend()
+		#plt.xlabel('Epochs')
+		#plt.ylabel('MSE loss')
+		#plt.show()
+
+		activations = np.rint(LSTM50_bdir.predict([to_predict.userId, to_predict.movieId]))
+		print("activations: ", activations)
+		return activations
 
 	def bidirectional_LSTM_2(self, train, valid, users, movies):
 		user_input = Input(shape=(1,), dtype='int64', name='user_input')
