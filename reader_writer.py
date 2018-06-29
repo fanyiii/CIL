@@ -25,7 +25,7 @@ class ReaderWriter():
 			movies[movie_count] = movie
 			movie_count = movie_count+1
 
-		with open(file_name_2, "w") as newfile:
+		with open(file_name_2, "w", newline='') as newfile:
 		    writer = csv.writer(newfile)
 		    writer.writerow(["userId", "movieId", "rating"])
 		    for i in range(users_movies.shape[0]):
@@ -38,7 +38,7 @@ class ReaderWriter():
 
 	def write_to_file(self, data, index_file, file_name):
 		indexes = pd.read_csv(index_file).Id
-		with open(file_name, "w") as newfile:
+		with open(file_name, "w", newline='') as newfile:
 			writer = csv.writer(newfile)
 			writer.writerow(["Id", "Prediction"])
 			for i in range(data.shape[0]):
