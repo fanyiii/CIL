@@ -33,7 +33,7 @@ Our contribution is based on a combination of multiple KNN based solutions and d
 \section{Our Novel Solution}
 
 \section{Comparing To Baselines}
-We are comparing our novel solution to two others so that we can see how much improvement was done. The first of the two other solutions is the one from Assignment 3, where we were first completing the missing ratings in the matrix by setting them to the average over all observed ratings for a particular item. Then we tried to find an underlying structure in the data by performing SVD, where $X^{train} = UDV^T$. We vaired the number $k$ of eigenvalues used and truncated $U$ and $V$ accordingly. \rfig{rmse} shows the Root-Mean-Squared-Error for $k$ between 0 and 95, in intervals of 5. In \rfig{rmse_detail} we can see the error more clearly for $k$ between 5 and 95. Apparently, taking the biggest 10 eigenvalues is giving us the best approximation to the data structure. The best result we achieved on kaggle this way was 1.16473.
+We are comparing our novel solution to two others so that we can see how much improvement was done. The first of the two other solutions is the one from Assignment 3. There we were first completing the missing ratings in the matrix by setting them to the average over all observed ratings for a particular item. Then we tried to find an underlying structure in the data by performing SVD, where $X^{train} = UDV^T$. We varied the number $k$ of eigenvalues used and truncated $U$ and $V$ accordingly. \rfig{rmse} shows the Root-Mean-Squared-Error for $k$ between 0 and 95, in intervals of 5. In \rfig{rmse_detail} we can see the error more clearly for $k$ between 5 and 95. Apparently, taking the biggest 10 eigenvalues is giving us the best approximation to the data structure. The best result we achieved on kaggle this way was an error of 1.16473.
 
 \begin{figure}[bp]
 \centering
@@ -91,7 +91,7 @@ We are comparing our novel solution to two others so that we can see how much im
 \label{fig:rmse_detail}
 \end{figure}
 
-The second solution we are presenting here for comparison is a neural network. We trained a bidirectional LSTM. It has a bias layer, so that we could take into account that different people are rating higher or lower in general. We trid different dropout values, number of nodes, batch-sizes and trained over various epochs. In \rfig{lstm} you can see the Mean-Squared-Error loss over ten epochs of the neural network. The best result we achieved on kaggle this way was 1.04627. There are people that achieved much better results with a neural network \cite{tseng}, but our feeling is that our data was too sparse for this.
+The second solution we are presenting here for comparison is a neural network. We trained a bidirectional LSTM. It has a bias layer, so that we could take into account that different people are rating higher or lower in general. We tried different dropout values, number of nodes, batch-sizes and trained over various epochs. In \rfig{lstm} you can see the Mean-Squared-Error loss over ten epochs of the neural network. We set a dropout of 0.75, 40 nodes in each layer and a batch size of 50, as these values were performing the best in our experiment. The best result we achieved on kaggle this way was an error of 1.04627. There are people that achieved much better results with a neural network \cite{tseng}, but our feeling is that our data was too sparse for this.
 
 \begin{figure}[tbp]
 \centering
@@ -125,7 +125,7 @@ Comparing the two solutions with our novel approach result of 0.98362 we can see
 
 \section{Summary}
 
-\newpage
+\nocite{*}
 \bibliographystyle{IEEEtran}
 \bibliography{report}
 \end{document}
