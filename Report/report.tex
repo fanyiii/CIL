@@ -124,6 +124,9 @@ The second solution we are presenting here for comparison is a neural network. W
 Comparing the two solutions with our novel approach result of 0.98362 we can see
 
 \section{Summary}
+In summary, our novel solution adopts ensemble learning approach and averages the results of different prediction algorithms, namely SVD, KNN-User-User-Pearson and KNN-Item-Item-Pearson. Traditional ensemble learning approaches usually train multiple models of a single learning algorithm. Here, our novel fusion approach managed to generate better results by first choosing the best parameters for the base collaborative filtering algorithms, then combining models with different algorithms as well as different parameters of the same algorithm as in a traditional approach. Experimental results suggest consistent better performance when several different algorithms are used. The final ensemble is then selected based on  cross-validation results in a systematic comparison of different algorithm combinations. 
+This approach is also flexible and time-efficient in the case that more base CF algorithms are to be added and cross-validation needs to be carried out for a new ensemble. 
+Since our solution computes a simple average of selected models, investigation into the performance of a weighted sum and how to obtain the optimal weights in the final ensemble might be required to achieve further improvement to the prediction results.
 
 \nocite{*}
 \bibliographystyle{IEEEtran}
