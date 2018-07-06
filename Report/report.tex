@@ -29,7 +29,48 @@ In this paper we present our approach to the problem, which is based on a combin
 \section{Introduction}
 Collaborative filtering has been known for a while and there are many important contributions by research. For example in \cite{breese} there is an overview and an empirical analysis of multiple algorithms including memory-based algorithms predicting the rating of an item by the active user based on a weighted sum of the other users' rating of that item. Another example taken from \cite{breese} are model-based algorithms like the Bayesian Network Model that take a probabilistic approach to the problem by setting the rating to its expected value according to some probability distribution. In \cite{paterek} the authors focus on SVD and in particular elaborate on the importance of regularization techniques. They further demonstrate that the combination of several distinct predictors can lead to even better results. Many of the more recent contributions make use of deep neural networks. For example in \cite{he} the authors introduce neural collaborative filtering. This is a neural network technique based on a combination of generalized matrix factorization and multi-layer perceptron optimizing the logarithm of a likelihood. In \cite{sedhain} the authors rely on autoencoders to solve the problem of collaborative filtering. One of the main advantages of their system AutoRec compared to multiple other collaborative filtering solutions is that it directly optimizes the Root Mean Square Error (RMSE). Other contributions rely on clustering techniques like k-nearest neighbors. For example \cite{xue} presents a cluster-based collaborative filtering framework that puts much effort into smoothing clusters.
 
-Similar to \cite{paterek}, our contribution is based on a combination of multiple predictors. This predictors include KNN based solutions and dimensionality reduction through SVD. We also experimented with neural networks in particular by building a bidirectional Long Short-Term Memory (LSTM) network that directly predicts ratings. Furthermore we tried to achieve the dimensionality reduction with an autoencoder built of LSTM cells. However, both of these aproaches did not yield an improvement on our results, so we decided to drop them.\section{Our Novel Solution}
+Similar to \cite{paterek}, our contribution is based on a combination of multiple predictors. This predictors include KNN based solutions and dimensionality reduction through SVD. We also experimented with neural networks in particular by building a bidirectional Long Short-Term Memory (LSTM) network that directly predicts ratings. Furthermore we tried to achieve the dimensionality reduction with an autoencoder built of LSTM cells. However, both of these aproaches did not yield an improvement on our results, so we decided to drop them.
+
+\section{Our Novel Solution}
+Our novel solution is based on the idea of fusion by ensemble averaging, a process of creating multiple models and averaging their outputs to produce a desired output\cite{ariel}. Usuallly a model created by ensemble averaging performs better than any individual model, because it "averages out" errors of each individual model. To evaluate our models, we use a random 80:20 splits over the original training dataset. All algorithms ran on the same splits. 
+
+For this project, we first constructed k-NN models with different similarity metrics and different perspectives, and SVD++ models with different sizes of factors (the same values were used for other parameters). In Table I, you can see the Root-Mean-Squared-Error of each modle. Item based k-NN models perform better than user based k-NN models, and k=NN models based on Pearson correlation similarity perform better than k-NN models based on Mean Squared Difference (MSD) similarity. There is no much difference between SVD++ models with different sizes of factors. Among those individual models, item-item k-NN model based on Pearson correlation similarity performs best, and its RMSE on our validation set is 0.991212.
+
+\begin{table}[h] 
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Model}                                                   & \textbf{RMSE} \\ \hline
+User-User k-NN model based on MSD similarity                     & 1.010925     \\ \hline
+Item-Item k-NN model based on MSD similarity                     & 0.995846     \\ \hline
+User-User k-NN model based on Pearson correlation similarity     & 0.999997     \\ \hline
+Item-Item k-NN model based on Pearson correlation similarity     & 0.991212     \\ \hline
+SVD++ model factors=10                                           & 1.003788     \\ \hline
+SVD++ model factors=20                                           & 1.003131     \\ \hline
+SVD++ model factors=30                                           & 1.003923     \\ \hline
+\end{tabular}
+\caption{\label{tab:Table 1}RMSE of different models}
+\end{table}
+
+A simple fusion of these models can then be contructed by averaging outputs of those basic models. We tried to construct fusion models with different combinations, and you can see results of part of our experiments in Table II. All fusion models perform significantly better than individual models. The model which averages outputs of SVD++ model with factor size equals to 20, User-User k-NN model based on Pearson correlation similarity and Item-Item k-NN model based on Pearson correlation similarity achieved the best result, and its RMSE on our validation set is 0.987597. Compared the model with the best individual model in our previous experiments, the fusion model reduces the RMSE by 3.647\%. With the model, we achieved a score of 0.98362 on kaggle, which is the best among all of our submissions.
+
+\begin{table}[h]
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Fusion Model}                                          & \textbf{RMSE} \\ \hline
+k-NN-User-User-Pearson + k-NN-Item-Item-Pearson                & 0.990154     \\ \hline
+k-NN-Item-Item-MSD + k-NN-Item-Item-Pearson                    & 0.988693     \\ \hline
+k-NN-User-User-MSD + k-NN-User-User-Pearson                    & 0.990045     \\
++ k-NN-Item-Item-MSD + k-NN-Item-Item-Pearson                  &      \\ \hline
+SVD++ factors=10 + SVD++ factors=20         & 0.999779     \\ 
++ SVD++ factors=30 & \\\hline
+SVD++ factors=20 + k-NN-User-User-Pearson                      & 0.987597     \\
++ k-NN-Item-Item-Pearson                                       &      \\ \hline
+SVD++ factors=20 + k-NN-Item-Item-MSD                          & 0.988114     \\
++ k-NN-Item-Item-Pearson                                       &  \\ \hline
+Fusion of all models                                           & 0.989956     \\ \hline
+\end{tabular}
+\caption{\label{tab:Table 2}RMSE of fusion models}
+\end{table}
 
 \section{Comparing To Baselines}
 We are comparing our novel solution to two others such that we can see how much improvement was achieved. The first of the two other solutions is the one from Assignment 3. There we were first completing the missing ratings in the matrix by setting them to the average over all observed ratings for a particular item. Then we tried to find an underlying structure in the data by performing SVD, where $X^{train} = UDV^T$. We varied the number $k$ of eigenvalues used and truncated $U$ and $V$ accordingly, by taking the first $k$ columns of each of the matrixes. \rfig{rmse} shows the Root-Mean-Squared-Error for $k$ between 0 and 95, in intervals of 5. In \rfig{rmse_detail} we can see the error more clearly for $k$ between 5 and 95. Apparently, taking the biggest 10 eigenvalues is giving us the best approximation to the data structure. The best result we achieved on kaggle this way was an error of 1.16473.
