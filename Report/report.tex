@@ -14,18 +14,22 @@
 \title{CIL Project: Collaborative Filtering}
 
 \author{
-	Dave Eschbach, Fanyi Zhou, Ulla Aeschbacher, Xiyue Shi\\
+	Ulla Aeschbacher, David Eschbach,  Xiyue Shi, Fanyi Zhou\\
 	Department of Computer Science, ETH Zurich, Switzerland
 }
 
 \maketitle
 
 \begin{abstract}
- 
+Recommender systems and collaborative filtering have become very popular lately. For example streaming platforms use them to recommend new movies to their users based on a rating that users have previously assigned to other movies. For this purpose recommender systems try to exploit similarities between the rated items and potentially also between users. To achieve this, collaborative systems aim to learn a low dimensional representation of those items.
+
+In this paper we present our approach to the problem, which is based on a combination of Singular Value Decomposition (SVD) and k-nearest-neighbor (KNN) working with the Pearson correlation. Our final solution has a Root Mean Square Error (RMSE) of 0.98362.
 \end{abstract}
 
 \section{Introduction}
+Collaborative filtering has been known for a while and there are many important contributions from research. For example in \cite{breese} there is an overview and an empirical analysis of multiple algorithms including memory-based algorithms predicting the rating of an item by the active user based on a weighted sum of the other users rating of that item. Another example from \cite{breese} are model-based algorithms like the Bayesian Network Model that take a probabilistic approach to the problem. In \cite{paterek} the authors focus on SVD and in particular elaborate on the importance of regularization techniques. They further demonstrate how effective the combination of several distinct predictors can be. More recent contributions make use of deep neural networks. For example in \cite{he} the authors introduce neural collaborative filtering which is a neural network technique based on a combination of generalized matrix factorization and multi-layer perceptron optimizing a log-likelihood. In \cite{sedhain} the authors rely on autoencoders to solve the problem of collaborative filtering. One of the main advantages of their system AutoRec compared to multiple other collaborative filtering solutions is that it directly optimizes the Root Mean Square Error (RMSE). Other contributions rely on clustering techniques like k-nearest neighbors. For example in \cite{xue} a cluster-based collaborative filtering framework that puts much effort in smoothing clusters is built.
 
+Our contribution is based on a combination of multiple KNN based solutions and dimensionality reduction through SVD. We also experimented with neural networks in particular by building a bidirectional Long Short-Term Memory (LSTM) network directly predicting ratings and we tried to achieve the dimensionality reduction with an autoencoder. However, both of these aproaches did not yield an improvement on our results, so we decided to drop them.
 \section{Our Novel Solution}
 
 \section{Comparing To Baselines}
@@ -122,58 +126,6 @@ Comparing the two solutions with our novel approach result of 0.98362 we can see
 \section{Summary}
 
 \newpage
-\section{Computational Intelligence Laboratory Requirements}
-\label{sec:cil}
-
-Your semester project is a group effort. It consists of four parts:
-\begin{enumerate}
-\item The programming assignments you solve during the semester.
-\item Developing a novel solution for one of the assignments, e.g. by
-  combining methods from previous programming assignments into a novel
-  solution.
-\item Comparing your novel solution to previous assignments.
-\item Writing up your findings in a short scientific paper.
-\end{enumerate}
-
-\subsection{Grading}
-
-There are two different types of grading criteria applied to your
-project, with the corresponding weights shown in brackets.
-\begin{description}
-\item[Competitive] \ \\
-  The following criteria is scored based on your rank
-  in comparison with the rest of the class.
-  \begin{itemize}
-  \item time taken for computation (10\%)
-  \item average rank for all other criteria relevant to the task, for
-    example reconstruction error and sparsity (20\%)
-  \end{itemize}
-  The ranks will then be converted on a linear scale into a grade
-  between 4 and 6.
-\item[Non-competitive] \ \\
-  The following criteria is scored based on an
-  evaluation by the teaching assistants.
-  \begin{itemize}
-  \item quality of paper (30\%)
-  \item quality of implementation (20\%)
-  \item creativity of solution (20\%)
-  \end{itemize}
-\end{description}
-
-\subsection{Submission System}
-
-The deadline for submitting your project report is Friday, 22 June
-2012.
-You need to submit:
-\begin{itemize}
-\item PDF of paper.
-\item Archive (\texttt{.tar.gz} or \texttt{.zip}) of software. Please
-  do not forget to include author information in the source archive.
-\end{itemize}
-
-\textbf{Important:} Please check the submission instructions on the webpage 
-as it is the most updated instructions. 
-
 \bibliographystyle{IEEEtran}
 \bibliography{report}
 \end{document}
